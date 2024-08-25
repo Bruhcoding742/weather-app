@@ -1,1 +1,124 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            padding: 10px;
+            width: 70%;
+            border: 1px solid #00796b;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            background-color: #00796b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background-color: #004d40;
+        }
+        .weather-info {
+            display: none;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .weather-info h2 {
+            margin-bottom: 10px;
+        }
+        .weather-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-group">
+            <input type="text" id="city" placeholder="Enter city name">
+            <button onclick="getWeather()">Get Weather</button>
+        </div>
+        <div class="weather-info" id="weatherInfo">
+            <h2 id="cityName"></h2>
+            <p id="temperature"></p>
+            <p id="weather"></p>
+            <p id="humidity"></p>
+            <p id="pressure"></p>
+            <p id="wind"></p>
+            <p id="cloudiness"></p>
+            <p id="sunrise"></p>
+            <p id="sunset"></p>
+        </div>
+    </div>
+    <script>
+        async function getWeather() {
+            const apiKey = "d386ab783288b95342b9c1b805118c12";
+            const city = document.getElementById("city").value;
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=imperial`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error("City not found");
+                }
+                const data = await response.json();
+                displayWeather(data);
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function displayWeather(data) {
+            const weatherInfo = document.getElementById("weatherInfo");
+            const cityName = document.getElementById("cityName");
+            const temperature = document.getElementById("temperature");
+            const weather = document.getElementById("weather");
+            const humidity = document.getElementById("humidity");
+            const pressure = document.getElementById("pressure");
+            const wind = document.getElementById("wind");
+            const cloudiness = document.getElementById("cloudiness");
+            const sunrise = document.getElementById("sunrise");
+            const sunset = document.getElementById("sunset");
+
+            cityName.innerText = `City: ${data.name}`;
+            temperature.innerText = `Temperature: ${data.main.temp.toFixed(2)}°F (Feels like ${data.main.feels_like.toFixed(2)}°F)`;
+            weather.innerText = `Weather: ${data.weather[0].description}`;
+            humidity.innerText = `Humidity: ${data.main.humidity}%`;
+            pressure.innerText = `Pressure: ${data.main.pressure} hPa`;
+            wind.innerText = `Wind: ${data.wind.speed} mph at ${data.wind.deg}°`;
+            cloudiness.innerText = `Cloudiness: ${data.clouds.all}%`;
+
+            const sunriseDate = new Date(data.sys.sunrise * 1000);
+            const sunsetDate = new Date(data.sys.sunset * 1000);
+            sunrise.innerText = `Sunrise: ${sunriseDate.toLocaleTimeString()}`;
+            sunset.innerText = `Sunset: ${sunsetDate.toLocaleTimeString()}`;
+
+            weatherInfo.style.display = "block";
+        }
+    </script>
+</body>
+</html>
